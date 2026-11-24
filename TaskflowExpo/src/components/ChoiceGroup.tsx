@@ -34,9 +34,6 @@ export function ChoiceGroup({ label, options, value, onChange, disabled }: Choic
               onPress={() => onChange(option.value)}
               style={[styles.option, active && styles.optionActive]}
             >
-              {option.color ? (
-                <View style={[styles.dot, { backgroundColor: option.color }]} />
-              ) : null}
               <Text style={[styles.optionText, active && styles.optionTextActive]}>
                 {option.label}
               </Text>
@@ -66,7 +63,6 @@ const styles = StyleSheet.create({
   option: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
     paddingHorizontal: 12,
     paddingVertical: 9,
     borderWidth: 1,
@@ -77,11 +73,6 @@ const styles = StyleSheet.create({
   optionActive: {
     borderColor: colors.accent,
     backgroundColor: colors.accentSoft,
-  },
-  dot: {
-    width: 7,
-    height: 7,
-    borderRadius: 4,
   },
   optionText: {
     color: colors.text,

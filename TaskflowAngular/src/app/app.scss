@@ -32,20 +32,6 @@
   font-size: 1.35rem;
 }
 
-.logo {
-  display: grid;
-  place-items: center;
-  width: 34px;
-  height: 34px;
-  border: 1px solid #c4d2bf;
-  border-radius: 4px;
-  background: var(--accent-soft);
-  color: var(--accent);
-  font-family: Georgia, 'Times New Roman', serif;
-  font-size: 0.9rem;
-  font-weight: 700;
-}
-
 .subtitle {
   color: var(--muted);
   font-size: 0.83rem;
@@ -66,13 +52,13 @@
 .alert {
   padding: 10px 14px;
   border-left: 3px solid var(--border-strong);
-  background: #f8f5ee;
+  background: var(--surface-muted);
   font-size: 0.87rem;
 }
 
 .alert-error {
   border-left-color: var(--danger);
-  color: #7d3025;
+  color: var(--danger);
 }
 
 .alert-success {

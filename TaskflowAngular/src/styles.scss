@@ -1,14 +1,22 @@
 :root {
-  --bg: #f3f0e9;
-  --surface: #fffdf8;
-  --border: #ddd6c8;
-  --border-strong: #c8c0b0;
-  --text: #26231d;
-  --muted: #7b7466;
-  --accent: #37603f;
-  --accent-dark: #2a4a30;
-  --accent-soft: #e9efe4;
-  --danger: #9b3b2c;
+  --bg: #121212;
+  --surface: #1b1b1b;
+  --surface-muted: #222222;
+  --hover: #2a2a2a;
+  --border: #333333;
+  --border-strong: #454545;
+  --text: #f0f0f0;
+  --muted: #a3a3a3;
+  --accent: #7c5cbf;
+  --accent-dark: #6a4aa8;
+  --accent-soft: #2a2238;
+  --danger: #d36b5d;
+  --danger-border: #6b3a34;
+  --danger-soft: #2a1c1a;
+  --input: #161616;
+  --pending: #c9a04a;
+  --progress: #6a93c4;
+  --done: #6aaa78;
 }
 
 * {
@@ -24,6 +32,7 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
+  color-scheme: dark;
   font-family:
     'Segoe UI',
     system-ui,
@@ -97,17 +106,17 @@ h2 {
 }
 
 .btn-ghost:hover {
-  background: #f1ede4;
+  background: var(--hover);
 }
 
 .btn-danger {
-  border-color: #d9b9b2;
+  border-color: var(--danger-border);
   background: transparent;
   color: var(--danger);
 }
 
 .btn-danger:hover {
-  background: #f7e9e6;
+  background: var(--danger-soft);
 }
 
 .btn-link {
@@ -131,7 +140,7 @@ h2 {
   padding: 8px 10px;
   border: 1px solid var(--border-strong);
   border-radius: 4px;
-  background: #fffefb;
+  background: var(--input);
   color: var(--text);
   font: inherit;
   font-size: 0.9rem;
@@ -143,7 +152,7 @@ h2 {
 
 .input:focus {
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgb(55 96 63 / 12%);
+  box-shadow: 0 0 0 3px rgb(124 92 191 / 25%);
 }
 
 .field {
@@ -181,31 +190,11 @@ h2 {
 }
 
 .badge + .badge::before {
-  content: '·';
+  content: '-';
   margin-right: 2px;
   color: var(--border-strong);
 }
 
-.badge[data-status]::before {
-  content: '';
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--border-strong);
-}
-
-.badge[data-status='PENDENTE']::before {
-  background: #b8862f;
-}
-
-.badge[data-status='EM_ANDAMENTO']::before {
-  background: #3f6f8a;
-}
-
-.badge[data-status='CONCLUIDA']::before {
-  background: #4a7c59;
-}
-
 .badge[data-priority] {
-  color: #8a8274;
+  color: var(--muted);
 }

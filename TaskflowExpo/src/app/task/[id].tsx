@@ -11,7 +11,7 @@ import {
 
 import { Task, TaskStatus } from '@/models/Task';
 import { deleteTask, getTask, updateTaskStatus } from '@/services/taskService';
-import { colors, fonts, priorityLabels, statusColors, statusLabels } from '@/theme';
+import { colors, fonts, priorityLabels, statusLabels } from '@/theme';
 
 const STATUSES: TaskStatus[] = ['PENDENTE', 'EM_ANDAMENTO', 'CONCLUIDA'];
 
@@ -112,9 +112,8 @@ export default function TaskDetails() {
             <Text style={styles.title}>{task.titulo}</Text>
 
             <View style={styles.meta}>
-              <View style={[styles.dot, { backgroundColor: statusColors[task.status] }]} />
               <Text style={styles.metaText}>{statusLabels[task.status]}</Text>
-              <Text style={styles.separator}>·</Text>
+              <Text style={styles.separator}>-</Text>
               <Text style={styles.metaText}>{priorityLabels[task.prioridade]}</Text>
             </View>
 
@@ -145,7 +144,6 @@ export default function TaskDetails() {
                     onPress={() => changeStatus(status)}
                     style={[styles.statusButton, active && styles.statusButtonActive]}
                   >
-                    <View style={[styles.dot, { backgroundColor: statusColors[status] }]} />
                     <Text
                       style={[
                         styles.statusButtonText,
@@ -186,6 +184,17 @@ export default function TaskDetails() {
               >
                 <Text style={styles.dangerButtonText}>Excluir</Text>
               </Pressable>
+
+              {/* <Pressable
+                accessibilityRole="button"
+                onPress={() => {
+                  setConfirmingDelete(false);
+                  router.push('/task/form');
+                }}
+                style={({ pressed }) => [styles.ghostButton, pressed && styles.buttonPressed]}
+              >
+                <Text style={styles.ghostButtonText}>Nova tarefa</Text>
+              </Pressable> */}
             </View>
 
             {confirmingDelete ? (
@@ -264,11 +273,6 @@ const styles = StyleSheet.create({
     gap: 6,
     marginTop: 10,
   },
-  dot: {
-    width: 7,
-    height: 7,
-    borderRadius: 4,
-  },
   metaText: {
     color: colors.muted,
     fontSize: 12,
@@ -310,7 +314,6 @@ const styles = StyleSheet.create({
   statusButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
     paddingHorizontal: 12,
     paddingVertical: 9,
     borderWidth: 1,

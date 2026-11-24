@@ -5,12 +5,13 @@ App Expo/React Native que consome a API do TaskFlow (Spring Boot).
 ## Funcionalidades
 
 - Lista de tarefas com status e prioridade
+- Filtro por status (Todos, Pendentes, Em andamento, Concluídas)
+- Botão Atualizar e atualização por gesto de puxar para baixo
 - Tela de detalhes da tarefa
 - Criação de tarefas
 - Edição de tarefas
 - Exclusão com confirmação
 - Alteração de status (Pendente, Em andamento, Concluída)
-- Atualização por gesto de puxar para baixo
 - Navegação entre lista, detalhes e formulário com Expo Router
 
 ## Pré-requisitos

@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnInit, signal } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, signal } from '@angular/core';
 
 import { TaskDetail } from './components/task-detail/task-detail';
 import { TaskList } from './components/task-list/task-list';
@@ -21,7 +21,10 @@ export class App implements OnInit {
   readonly error = signal('');
   readonly success = signal('');
 
-  constructor(private service: TaskService) {}
+  constructor(
+    private service: TaskService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
     this.loadTasks();
@@ -29,8 +32,8 @@ export class App implements OnInit {
 
   loadTasks(selectId?: number): void {
     const targetId = selectId ?? this.selectedTask()?.id ?? null;
-
     this.loading.set(true);
+    this.cdr.markForCheck();
 
     this.service.getAll(this.filter() || undefined).subscribe({
       next: (tasks) => {
@@ -38,16 +41,18 @@ export class App implements OnInit {
         this.loading.set(false);
         this.error.set('');
 
-        if (targetId != null) {
+        if (targetId !== null) {
           const selected = tasks.find((task) => task.id === targetId);
           if (selected) {
             this.selectedTask.set(selected);
           }
         }
+        this.cdr.markForCheck();
       },
       error: (error: HttpErrorResponse) => {
         this.loading.set(false);
         this.error.set(this.errorMessage(error));
+        this.cdr.markForCheck();
       },
     });
   }
@@ -90,40 +95,49 @@ export class App implements OnInit {
 
   saveTask(request: TaskRequest): void {
     const current = this.selectedTask();
+    const isEditing = this.mode() === 'edit' && current !== null;
     this.clearMessages();
 
-    const request$ = current
-      ? this.service.update({ ...request, id: current.id })
+    const request$ = isEditing && current !== null
+      ? this.service.update(current.id, request)
       : this.service.save(request);
 
     request$.subscribe({
       next: (saved) => {
         this.selectedTask.set(saved);
         this.mode.set('view');
-        this.success.set(current ? 'Tarefa atualizada com sucesso.' : 'Tarefa criada com sucesso.');
+        this.success.set(isEditing
+          ? 'Tarefa atualizada com sucesso.'
+          : 'Tarefa criada com sucesso.');
         this.loadTasks(saved.id);
+        this.cdr.markForCheck();
       },
-      error: (error: HttpErrorResponse) => this.error.set(this.errorMessage(error)),
+      error: (error: HttpErrorResponse) => {
+        this.error.set(this.errorMessage(error));
+        this.cdr.markForCheck();
+      },
     });
   }
 
   deleteTask(id: number): void {
-    const task = this.selectedTask() ?? this.tasks().find((item) => item.id === id);
-
-    if (!task || !window.confirm('Deseja realmente excluir esta tarefa?')) {
+    if (!window.confirm('Deseja realmente excluir esta tarefa?')) {
       return;
     }
 
     this.clearMessages();
 
-    this.service.delete(task).subscribe({
+    this.service.delete(id).subscribe({
       next: () => {
         this.selectedTask.set(null);
         this.mode.set('empty');
         this.success.set('Tarefa excluída com sucesso.');
         this.loadTasks();
+        this.cdr.markForCheck();
       },
-      error: (error: HttpErrorResponse) => this.error.set(this.errorMessage(error)),
+      error: (error: HttpErrorResponse) => {
+        this.error.set(this.errorMessage(error));
+        this.cdr.markForCheck();
+      },
     });
   }
 
@@ -136,7 +150,6 @@ export class App implements OnInit {
     if (error.status === 0) {
       return 'Não foi possível conectar à API. Verifique se o backend está rodando em http://localhost:8080.';
     }
-
     return error.error?.message ?? 'Ocorreu um erro ao processar a solicitação.';
   }
 }

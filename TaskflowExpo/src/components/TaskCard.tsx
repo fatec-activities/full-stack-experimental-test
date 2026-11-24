@@ -2,7 +2,7 @@ import { router } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { Task } from '@/models/Task';
-import { colors, priorityLabels, statusColors, statusLabels } from '@/theme';
+import { colors, priorityLabels, statusLabels } from '@/theme';
 
 type TaskCardProps = {
   task: Task;
@@ -20,9 +20,8 @@ export function TaskCard({ task }: TaskCardProps) {
       <Text style={styles.assignee}>{task.responsavel}</Text>
 
       <View style={styles.meta}>
-        <View style={[styles.dot, { backgroundColor: statusColors[task.status] }]} />
         <Text style={styles.status}>{statusLabels[task.status]}</Text>
-        <Text style={styles.separator}>·</Text>
+        <Text style={styles.separator}>-</Text>
         <Text style={styles.priority}>{priorityLabels[task.prioridade]}</Text>
       </View>
     </Pressable>
@@ -36,7 +35,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
   },
   rowPressed: {
-    backgroundColor: '#f7f3ea',
+    backgroundColor: colors.hover,
   },
   title: {
     color: colors.text,
@@ -54,11 +53,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 6,
     marginTop: 5,
-  },
-  dot: {
-    width: 7,
-    height: 7,
-    borderRadius: 4,
   },
   status: {
     color: colors.muted,

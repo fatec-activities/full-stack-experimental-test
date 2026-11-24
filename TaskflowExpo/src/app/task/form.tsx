@@ -23,9 +23,9 @@ type FieldErrors = {
 };
 
 const STATUS_OPTIONS = [
-  { value: 'PENDENTE', label: statusLabels.PENDENTE, color: statusColors.PENDENTE },
-  { value: 'EM_ANDAMENTO', label: statusLabels.EM_ANDAMENTO, color: statusColors.EM_ANDAMENTO },
-  { value: 'CONCLUIDA', label: statusLabels.CONCLUIDA, color: statusColors.CONCLUIDA },
+  { value: 'PENDENTE', label: statusLabels.PENDENTE },
+  { value: 'EM_ANDAMENTO', label: statusLabels.EM_ANDAMENTO },
+  { value: 'CONCLUIDA', label: statusLabels.CONCLUIDA },
 ];
 
 const PRIORITY_OPTIONS = [

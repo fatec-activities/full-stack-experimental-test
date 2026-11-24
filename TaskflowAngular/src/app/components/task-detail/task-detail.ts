@@ -1,5 +1,5 @@
-import { Component, effect, inject, input, output } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { DetailMode, Task, TaskPriority, TaskRequest, TaskStatus } from '../../models/task.model';
 
@@ -9,15 +9,15 @@ import { DetailMode, Task, TaskPriority, TaskRequest, TaskStatus } from '../../m
   templateUrl: './task-detail.html',
   styleUrl: './task-detail.scss',
 })
-export class TaskDetail {
-  readonly task = input<Task | null>(null);
-  readonly mode = input<DetailMode>('empty');
+export class TaskDetail implements OnChanges {
+  @Input() task: Task | null = null;
+  @Input() mode: DetailMode = 'empty';
 
-  readonly save = output<TaskRequest>();
-  readonly remove = output<number>();
-  readonly edit = output<void>();
-  readonly create = output<void>();
-  readonly cancel = output<void>();
+  @Output() save = new EventEmitter<TaskRequest>();
+  @Output() remove = new EventEmitter<number>();
+  @Output() edit = new EventEmitter<void>();
+  @Output() create = new EventEmitter<void>();
+  @Output() cancel = new EventEmitter<void>();
 
   readonly statusLabels: Record<TaskStatus, string> = {
     PENDENTE: 'Pendente',
@@ -31,39 +31,32 @@ export class TaskDetail {
     ALTA: 'Alta',
   };
 
-  readonly form = inject(FormBuilder).nonNullable.group({
-    titulo: ['', Validators.required],
-    descricao: [''],
-    responsavel: ['', Validators.required],
-    status: ['PENDENTE' as TaskStatus, Validators.required],
-    prioridade: ['MEDIA' as TaskPriority, Validators.required],
+  form = new FormGroup({
+    titulo: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
+    descricao: new FormControl(''),
+    responsavel: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
+    status: new FormControl<TaskStatus>('PENDENTE', { nonNullable: true }),
+    prioridade: new FormControl<TaskPriority>('MEDIA', { nonNullable: true }),
   });
 
-  constructor() {
-    effect(() => {
-      const mode = this.mode();
-      const task = this.task();
-
-      if (mode === 'edit' && task) {
-        this.form.patchValue({
-          titulo: task.titulo,
-          descricao: task.descricao ?? '',
-          responsavel: task.responsavel,
-          status: task.status,
-          prioridade: task.prioridade,
-        });
-      }
-
-      if (mode === 'create') {
-        this.form.reset({
-          titulo: '',
-          descricao: '',
-          responsavel: '',
-          status: 'PENDENTE',
-          prioridade: 'MEDIA',
-        });
-      }
-    });
+  ngOnChanges(): void {
+    if (this.mode === 'edit' && this.task) {
+      this.form.patchValue({
+        titulo: this.task.titulo,
+        descricao: this.task.descricao || '',
+        responsavel: this.task.responsavel,
+        status: this.task.status,
+        prioridade: this.task.prioridade,
+      });
+    } else if (this.mode === 'create') {
+      this.form.reset({
+        titulo: '',
+        descricao: '',
+        responsavel: '',
+        status: 'PENDENTE',
+        prioridade: 'MEDIA',
+      });
+    }
   }
 
   submit(): void {
@@ -72,6 +65,13 @@ export class TaskDetail {
       return;
     }
 
-    this.save.emit(this.form.getRawValue());
+    const value = this.form.getRawValue();
+    this.save.emit({
+      titulo: value.titulo,
+      descricao: value.descricao || null,
+      responsavel: value.responsavel,
+      status: value.status,
+      prioridade: value.prioridade,
+    });
   }
 }

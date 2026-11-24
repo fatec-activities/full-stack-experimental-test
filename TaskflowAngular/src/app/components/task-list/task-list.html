@@ -4,7 +4,7 @@
       <h2>Tarefas</h2>
       <div class="list-actions">
         <span class="count">
-          {{ tasks().length }} {{ tasks().length === 1 ? 'tarefa' : 'tarefas' }}
+          {{ tasks.length }} {{ tasks.length === 1 ? 'tarefa' : 'tarefas' }}
         </span>
         <button class="btn-link" type="button" (click)="refresh.emit()">Atualizar</button>
       </div>
@@ -12,7 +12,7 @@
 
     <select
       class="input"
-      [value]="filter()"
+      [value]="filter"
       (change)="onFilterChange($event)"
       aria-label="Filtrar por status"
     >
@@ -23,9 +23,9 @@
     </select>
   </div>
 
-  @if (loading()) {
+  @if (loading) {
     <p class="empty-list">Carregando tarefas...</p>
-  } @else if (tasks().length === 0) {
+  } @else if (tasks.length === 0) {
     <div class="empty-list">
       <p>Nenhuma tarefa encontrada.</p>
       <button class="btn btn-primary" type="button" (click)="create.emit()">
@@ -34,12 +34,12 @@
     </div>
   } @else {
     <ul class="task-list">
-      @for (task of tasks(); track task.id) {
+      @for (task of tasks; track task.id) {
         <li>
           <button
             class="task-item"
             type="button"
-            [class.selected]="task.id === selectedId()"
+            [class.selected]="task.id === selectedId"
             (click)="select.emit(task)"
           >
             <span class="task-title">{{ task.titulo }}</span>

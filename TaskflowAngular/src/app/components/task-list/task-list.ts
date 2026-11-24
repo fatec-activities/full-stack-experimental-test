@@ -1,4 +1,4 @@
-import { Component, input, output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 import { Task, TaskPriority, TaskStatus } from '../../models/task.model';
 
@@ -8,15 +8,15 @@ import { Task, TaskPriority, TaskStatus } from '../../models/task.model';
   styleUrl: './task-list.scss',
 })
 export class TaskList {
-  readonly tasks = input<Task[]>([]);
-  readonly selectedId = input<number | null>(null);
-  readonly loading = input(false);
-  readonly filter = input('');
+  @Input() tasks: Task[] = [];
+  @Input() selectedId: number | null = null;
+  @Input() loading = false;
+  @Input() filter = '';
 
-  readonly select = output<Task>();
-  readonly filterChange = output<string>();
-  readonly create = output<void>();
-  readonly refresh = output<void>();
+  @Output() select = new EventEmitter<Task>();
+  @Output() filterChange = new EventEmitter<string>();
+  @Output() create = new EventEmitter<void>();
+  @Output() refresh = new EventEmitter<void>();
 
   readonly statusLabels: Record<TaskStatus, string> = {
     PENDENTE: 'Pendente',

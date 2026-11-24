@@ -3,19 +3,20 @@ import { Platform } from 'react-native';
 import { TaskPriority, TaskStatus } from '@/models/Task';
 
 export const colors = {
-  background: '#f3f0e9',
-  surface: '#fffdf8',
-  surfaceMuted: '#fbf9f3',
-  border: '#ddd6c8',
-  borderStrong: '#c8c0b0',
-  text: '#26231d',
-  muted: '#7b7466',
-  accent: '#37603f',
-  accentSoft: '#e9efe4',
-  input: '#fffefb',
-  danger: '#9b3b2c',
-  dangerBorder: '#d9b9b2',
-  dangerSoft: '#f7e9e6',
+  background: '#121212',
+  surface: '#1b1b1b',
+  surfaceMuted: '#222222',
+  hover: '#2a2a2a',
+  border: '#333333',
+  borderStrong: '#454545',
+  text: '#f0f0f0',
+  muted: '#a3a3a3',
+  accent: '#7c5cbf',
+  accentSoft: '#2a2238',
+  input: '#161616',
+  danger: '#d36b5d',
+  dangerBorder: '#6b3a34',
+  dangerSoft: '#2a1c1a',
 };
 
 export const fonts = {
@@ -29,9 +30,9 @@ export const statusLabels: Record<TaskStatus, string> = {
 };
 
 export const statusColors: Record<TaskStatus, string> = {
-  PENDENTE: '#b8862f',
-  EM_ANDAMENTO: '#3f6f8a',
-  CONCLUIDA: '#4a7c59',
+  PENDENTE: '#c9a04a',
+  EM_ANDAMENTO: '#6a93c4',
+  CONCLUIDA: '#6aaa78',
 };
 
 export const priorityLabels: Record<TaskPriority, string> = {

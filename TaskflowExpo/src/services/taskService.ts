@@ -9,8 +9,9 @@ const host = devHost && devHost !== 'localhost' ? devHost : 'localhost';
 
 export const API_URL = `http://${host}:8080/api/tarefas`;
 
-export async function getTasks(): Promise<Task[]> {
-  const response = await axios.get<Task[]>(API_URL);
+export async function getTasks(status?: string): Promise<Task[]> {
+  const url = status ? `${API_URL}?status=${status}` : API_URL;
+  const response = await axios.get<Task[]>(url);
   return response.data;
 }
 

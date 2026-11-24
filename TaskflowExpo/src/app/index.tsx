@@ -5,6 +5,7 @@ import {
   FlatList,
   Pressable,
   RefreshControl,
+  ScrollView,
   StyleSheet,
   Text,
   View,
@@ -15,23 +16,32 @@ import { Task } from '@/models/Task';
 import { getTasks } from '@/services/taskService';
 import { colors, fonts } from '@/theme';
 
+const FILTER_OPTIONS = [
+  { value: '', label: 'Todos' },
+  { value: 'PENDENTE', label: 'Pendentes' },
+  { value: 'EM_ANDAMENTO', label: 'Em andamento' },
+  { value: 'CONCLUIDA', label: 'Concluídas' },
+];
+
 export default function Index() {
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [filter, setFilter] = useState('');
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState('');
 
-  const loadTasks = useCallback(async () => {
+  const loadTasks = useCallback(async (currentFilter: string = filter) => {
     try {
       setError('');
-      setTasks(await getTasks());
+      const data = await getTasks(currentFilter || undefined);
+      setTasks(data);
     } catch {
-      setError('Não foi possível carregar as tarefas. Verifique se o backend está rodando.');
+      setError('Não foi possível conectar à API. Verifique se o backend está rodando.');
     } finally {
       setLoading(false);
       setRefreshing(false);
     }
-  }, []);
+  }, [filter]);
 
   useFocusEffect(
     useCallback(() => {
@@ -44,7 +54,13 @@ export default function Index() {
     loadTasks();
   };
 
-  if (loading) {
+  const onFilterChange = (newFilter: string) => {
+    setFilter(newFilter);
+    setLoading(true);
+    loadTasks(newFilter);
+  };
+
+  if (loading && !refreshing) {
     return (
       <View style={styles.centered}>
         <ActivityIndicator size="large" color={colors.accent} />
@@ -64,20 +80,43 @@ export default function Index() {
               {tasks.length} {tasks.length === 1 ? 'tarefa' : 'tarefas'}
             </Text>
 
+            <Pressable onPress={() => loadTasks()}>
+              <Text style={styles.refreshText}>Atualizar</Text>
+            </Pressable>
+
             <Pressable
               accessibilityRole="button"
               onPress={() => router.push('/task/form')}
               style={({ pressed }) => [styles.newButton, pressed && styles.newButtonPressed]}
             >
-              <Text style={styles.newButtonText}>+ Nova</Text>
+              <Text style={styles.newButtonText}>Nova tarefa</Text>
             </Pressable>
           </View>
+        </View>
+
+        <View style={styles.filterWrapper}>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.filterBar}>
+            {FILTER_OPTIONS.map((item) => {
+              const active = filter === item.value;
+              return (
+                <Pressable
+                  key={item.value}
+                  onPress={() => onFilterChange(item.value)}
+                  style={[styles.filterChip, active && styles.filterChipActive]}
+                >
+                  <Text style={[styles.filterChipText, active && styles.filterChipTextActive]}>
+                    {item.label}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </ScrollView>
         </View>
 
         {error ? (
           <View style={styles.errorBox}>
             <Text style={styles.errorText}>{error}</Text>
-            <Pressable style={styles.retry} onPress={loadTasks}>
+            <Pressable style={styles.retry} onPress={() => loadTasks()}>
               <Text style={styles.retryText}>Tentar novamente</Text>
             </Pressable>
           </View>
@@ -88,7 +127,17 @@ export default function Index() {
             renderItem={({ item }) => <TaskCard task={item} />}
             ItemSeparatorComponent={() => <View style={styles.divider} />}
             contentContainerStyle={tasks.length === 0 ? styles.emptyContent : undefined}
-            ListEmptyComponent={<Text style={styles.emptyText}>Nenhuma tarefa encontrada.</Text>}
+            ListEmptyComponent={
+              <View style={styles.emptyBox}>
+                <Text style={styles.emptyText}>Nenhuma tarefa encontrada.</Text>
+                <Pressable
+                  onPress={() => router.push('/task/form')}
+                  style={styles.emptyButton}
+                >
+                  <Text style={styles.emptyButtonText}>Cadastrar tarefa</Text>
+                </Pressable>
+              </View>
+            }
             refreshControl={
               <RefreshControl
                 refreshing={refreshing}
@@ -120,7 +169,7 @@ const styles = StyleSheet.create({
   },
   panelHeader: {
     flexDirection: 'row',
-    alignItems: 'baseline',
+    alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 16,
     paddingVertical: 14,
@@ -136,11 +185,16 @@ const styles = StyleSheet.create({
   headerActions: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
+    gap: 12,
   },
   count: {
     color: colors.muted,
     fontSize: 12,
+  },
+  refreshText: {
+    color: colors.muted,
+    fontSize: 12,
+    textDecorationLine: 'underline',
   },
   newButton: {
     paddingHorizontal: 10,
@@ -156,6 +210,38 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '600',
   },
+  filterWrapper: {
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+    backgroundColor: colors.surface,
+  },
+  filterBar: {
+    flexDirection: 'row',
+    gap: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+  },
+  filterChip: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 4,
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: colors.surfaceMuted,
+  },
+  filterChipActive: {
+    borderColor: colors.accent,
+    backgroundColor: colors.accentSoft,
+  },
+  filterChipText: {
+    color: colors.muted,
+    fontSize: 12,
+    fontWeight: '500',
+  },
+  filterChipTextActive: {
+    color: colors.accent,
+    fontWeight: '600',
+  },
   divider: {
     height: 1,
     backgroundColor: colors.border,
@@ -163,11 +249,28 @@ const styles = StyleSheet.create({
   emptyContent: {
     flexGrow: 1,
     justifyContent: 'center',
+    alignItems: 'center',
+  },
+  emptyBox: {
+    alignItems: 'center',
+    gap: 12,
+    padding: 24,
   },
   emptyText: {
     color: colors.muted,
     fontSize: 14,
     textAlign: 'center',
+  },
+  emptyButton: {
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 4,
+    backgroundColor: colors.accent,
+  },
+  emptyButtonText: {
+    color: '#fff',
+    fontSize: 13,
+    fontWeight: '600',
   },
   centered: {
     flex: 1,

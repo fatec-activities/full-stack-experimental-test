@@ -6,7 +6,7 @@ import { colors, fonts } from '@/theme';
 export default function RootLayout() {
   return (
     <>
-      <StatusBar style="dark" />
+      <StatusBar style="light" />
       <Stack
         screenOptions={{
           headerStyle: { backgroundColor: colors.surface },
@@ -18,6 +18,7 @@ export default function RootLayout() {
       >
         <Stack.Screen name="index" options={{ title: 'TaskFlow' }} />
         <Stack.Screen name="task/[id]" options={{ title: 'Tarefa' }} />
+        <Stack.Screen name="task/form" options={{ title: 'Tarefa' }} />
       </Stack>
     </>
   );
