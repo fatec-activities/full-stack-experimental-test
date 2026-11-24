@@ -1,0 +1,136 @@
+<section class="panel detail-panel">
+  @switch (mode()) {
+    @case ('empty') {
+      <div class="empty-state">
+        <h2>Nenhuma tarefa selecionada</h2>
+        <p>Escolha uma tarefa na lista ao lado ou cadastre uma nova.</p>
+        <button class="btn btn-primary" type="button" (click)="create.emit()">
+          Cadastrar tarefa
+        </button>
+      </div>
+    }
+
+    @case ('view') {
+      @if (task(); as selected) {
+        <header class="detail-header">
+          <div>
+            <span class="eyebrow">Tarefa #{{ selected.id }}</span>
+            <h2>{{ selected.titulo }}</h2>
+          </div>
+          <div class="badges">
+            <span class="badge" [attr.data-status]="selected.status">
+              {{ statusLabels[selected.status] }}
+            </span>
+            <span class="badge" [attr.data-priority]="selected.prioridade">
+              {{ priorityLabels[selected.prioridade] }}
+            </span>
+          </div>
+        </header>
+
+        <dl class="detail-grid">
+          <div class="detail-item">
+            <dt>Responsável</dt>
+            <dd>{{ selected.responsavel }}</dd>
+          </div>
+          <div class="detail-item">
+            <dt>Status</dt>
+            <dd>{{ statusLabels[selected.status] }}</dd>
+          </div>
+          <div class="detail-item">
+            <dt>Prioridade</dt>
+            <dd>{{ priorityLabels[selected.prioridade] }}</dd>
+          </div>
+          <div class="detail-item full">
+            <dt>Descrição</dt>
+            <dd class="description">{{ selected.descricao || 'Sem descrição.' }}</dd>
+          </div>
+        </dl>
+
+        <div class="actions">
+          <button class="btn btn-primary" type="button" (click)="edit.emit()">Editar</button>
+          <button class="btn btn-danger" type="button" (click)="remove.emit(selected.id)">
+            Excluir
+          </button>
+          <button class="btn btn-ghost" type="button" (click)="create.emit()">Nova tarefa</button>
+        </div>
+      }
+    }
+
+    @default {
+      <form class="form" [formGroup]="form" (ngSubmit)="submit()">
+        <header class="detail-header">
+          <div>
+            <span class="eyebrow">
+              {{ mode() === 'create' ? 'Nova tarefa' : 'Editando tarefa #' + task()?.id }}
+            </span>
+            <h2>{{ mode() === 'create' ? 'Cadastrar tarefa' : 'Editar tarefa' }}</h2>
+          </div>
+        </header>
+
+        <div class="field">
+          <label class="label" for="titulo">Título *</label>
+          <input
+            id="titulo"
+            class="input"
+            type="text"
+            formControlName="titulo"
+            placeholder="Ex.: Implementar a listagem de tarefas"
+          />
+          @if (form.controls.titulo.touched && form.controls.titulo.invalid) {
+            <span class="error-text">O título é obrigatório.</span>
+          }
+        </div>
+
+        <div class="form-row">
+          <div class="field">
+            <label class="label" for="responsavel">Responsável *</label>
+            <input
+              id="responsavel"
+              class="input"
+              type="text"
+              formControlName="responsavel"
+              placeholder="Ex.: Ana"
+            />
+            @if (form.controls.responsavel.touched && form.controls.responsavel.invalid) {
+              <span class="error-text">O responsável é obrigatório.</span>
+            }
+          </div>
+
+          <div class="field">
+            <label class="label" for="status">Status</label>
+            <select id="status" class="input" formControlName="status">
+              <option value="PENDENTE">Pendente</option>
+              <option value="EM_ANDAMENTO">Em andamento</option>
+              <option value="CONCLUIDA">Concluída</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="label" for="prioridade">Prioridade</label>
+          <select id="prioridade" class="input" formControlName="prioridade">
+            <option value="BAIXA">Baixa</option>
+            <option value="MEDIA">Média</option>
+            <option value="ALTA">Alta</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label class="label" for="descricao">Descrição</label>
+          <textarea
+            id="descricao"
+            class="input"
+            rows="5"
+            formControlName="descricao"
+            placeholder="Detalhes opcionais da tarefa"
+          ></textarea>
+        </div>
+
+        <div class="actions">
+          <button class="btn btn-primary" type="submit">Salvar</button>
+          <button class="btn btn-ghost" type="button" (click)="cancel.emit()">Cancelar</button>
+        </div>
+      </form>
+    }
+  }
+</section>

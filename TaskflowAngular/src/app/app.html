@@ -1,0 +1,41 @@
+<div class="app-shell">
+  <header class="app-header">
+    <div class="brand">
+      <span class="logo">TF</span>
+      <h1>TaskFlow</h1>
+    </div>
+    <p class="subtitle">Gerenciador de tarefas compartilhadas</p>
+    <button class="btn btn-primary" type="button" (click)="startCreate()">+ Nova tarefa</button>
+  </header>
+
+  @if (error()) {
+    <div class="alert alert-error">{{ error() }}</div>
+  }
+
+  @if (success()) {
+    <div class="alert alert-success">{{ success() }}</div>
+  }
+
+  <main class="app-main">
+    <app-task-list
+      [tasks]="tasks()"
+      [selectedId]="selectedTask()?.id ?? null"
+      [loading]="loading()"
+      [filter]="filter()"
+      (select)="selectTask($event)"
+      (filterChange)="changeFilter($event)"
+      (create)="startCreate()"
+      (refresh)="refreshTasks()"
+    />
+
+    <app-task-detail
+      [task]="selectedTask()"
+      [mode]="mode()"
+      (save)="saveTask($event)"
+      (remove)="deleteTask($event)"
+      (edit)="startEdit()"
+      (create)="startCreate()"
+      (cancel)="cancelEdit()"
+    />
+  </main>
+</div>

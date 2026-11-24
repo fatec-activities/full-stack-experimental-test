@@ -1,0 +1,60 @@
+<aside class="panel">
+  <div class="list-header">
+    <div class="list-title">
+      <h2>Tarefas</h2>
+      <div class="list-actions">
+        <span class="count">
+          {{ tasks().length }} {{ tasks().length === 1 ? 'tarefa' : 'tarefas' }}
+        </span>
+        <button class="btn-link" type="button" (click)="refresh.emit()">Atualizar</button>
+      </div>
+    </div>
+
+    <select
+      class="input"
+      [value]="filter()"
+      (change)="onFilterChange($event)"
+      aria-label="Filtrar por status"
+    >
+      <option value="">Todos os status</option>
+      <option value="PENDENTE">Pendentes</option>
+      <option value="EM_ANDAMENTO">Em andamento</option>
+      <option value="CONCLUIDA">Concluídas</option>
+    </select>
+  </div>
+
+  @if (loading()) {
+    <p class="empty-list">Carregando tarefas...</p>
+  } @else if (tasks().length === 0) {
+    <div class="empty-list">
+      <p>Nenhuma tarefa encontrada.</p>
+      <button class="btn btn-primary" type="button" (click)="create.emit()">
+        Cadastrar tarefa
+      </button>
+    </div>
+  } @else {
+    <ul class="task-list">
+      @for (task of tasks(); track task.id) {
+        <li>
+          <button
+            class="task-item"
+            type="button"
+            [class.selected]="task.id === selectedId()"
+            (click)="select.emit(task)"
+          >
+            <span class="task-title">{{ task.titulo }}</span>
+            <span class="task-meta">{{ task.responsavel }}</span>
+            <span class="badges">
+              <span class="badge" [attr.data-status]="task.status">
+                {{ statusLabels[task.status] }}
+              </span>
+              <span class="badge" [attr.data-priority]="task.prioridade">
+                {{ priorityLabels[task.prioridade] }}
+              </span>
+            </span>
+          </button>
+        </li>
+      }
+    </ul>
+  }
+</aside>
